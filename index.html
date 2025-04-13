@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Magic Wallet Viewer</title>
+  <script src="https://cdn.jsdelivr.net/npm/magic-sdk/dist/magic.js"></script>
+</head>
+<body>
+  <h2>MYHIDt Wallet Viewer</h2>
+  <p>Enter your @myhomeid.com email address:</p>
+  <input type="email" id="email" placeholder="you@myhomeid.com" style="width:300px;">
+  <button id="loginBtn">Login & Show Wallet</button>
+  <pre id="output" style="margin-top:20px;white-space:pre-wrap;"></pre>
+
+  <script>
+    const magic = new Magic('pk_live_2068C536A1265F2D', { network: 'polygon' });
+
+    async function login() {
+      const email = document.getElementById('email').value;
+      const output = document.getElementById('output');
+
+      if (!email) {
+        output.textContent = "❌ Please enter a valid email.";
+        return;
+      }
+
+      output.textContent = "🔐 Sending OTP to " + email + "...";
+
+      try {
+        await magic.auth.loginWithEmailOTP({ email });
+        const metadata = await magic.user.getInfo();
+        output.textContent = "✅ Wallet for " + email + ":
+
+" + metadata.publicAddress;
+      } catch (err) {
+        output.textContent = "❌ Login failed:
+" + err.message;
+        console.error(err);
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", login);
+  </script>
+</body>
+</html>
